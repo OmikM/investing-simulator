@@ -20,20 +20,20 @@ min_payload = spacex_df['Payload Mass (kg)'].min()
 app = dash.Dash(__name__)
 
 # Create an app layout
-app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
+app.layout = html.Div(children=[html.H1('Crypto predicting challange',
                                         style={'textAlign': 'center', 'color': '#503D36',
                                                'font-size': 40}),
-                                html.P("Payload range (Kg):"),
+                                html.P("timerange"),
                                 # TASK 3: Add a slider to select payload range
-                                dcc.RangeSlider(id='payload-slider',
-                                                min=0,max=10000,step=2500,
+                                dcc.RangeSlider(id='time-range',
+                                                min=1567296000,max=1570665600,step=50000,
                                                 marks={
-                                                    0:"0",
-                                                    2500:"2500",
-                                                    5000:"5000",
-                                                    7500:"7500",
-                                                    10000:"10000"},
-                                                value=[0, 10000]
+                                                    1567296000:"0D",
+                                                    1568073600:"10D",
+                                                    1568937600:"20D",
+                                                    1569801600:"30D",
+                                                    1570665600:"40D"},
+                                                value=[1567296000, 1568073600]
                                                 ),
 
                                 # TASK 4: Add a scatter chart to show the correlation between payload and launch success
@@ -44,13 +44,19 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 # TASK 4:
 # Add a callback function for `site-dropdown` and `payload-slider` as inputs, `success-payload-scatter-chart` as output
 @app.callback(Output(component_id='success-payload-scatter-chart', component_property='figure'),
-              Input(component_id='payload-slider', component_property='value'))
-def get_scatter_chart(data):
-    data = coin.get_coin_market_chart_range_by_id(id='bitcoin', vs_currency='usd', from_timestamp=1199138400, to_timestamp=1500000000)
-    print(data[0])
-    fig = px.line(Y=data)
+              Input(component_id='time-range', component_property='value'))
+def get_scatter_chart(rang):
+    data = coin.get_coin_market_chart_range_by_id(id='bitcoin', vs_currency='usd', from_timestamp=rang[0], to_timestamp=rang[1])
+    prices = data['prices']
+    x=[]
+    for i in prices:
+        x.append(i[1])
+        prices = x
+    print(prices)
+    fig = px.line(y=prices)
     return fig
 
 # Run the app
 if __name__ == '__main__':
     app.run_server()
+
